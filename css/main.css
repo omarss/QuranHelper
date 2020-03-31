@@ -1,0 +1,44 @@
+@font-face {
+    font-family: 'UthmaniHafs';
+    src: url('../fonts/uthmanichafs1_ver13-webfont.eot');
+    src: url('../fonts/uthmanichafs1_ver13-webfont.eot?#iefix') format('embedded-opentype'),
+        url('../fonts/uthmanichafs1_ver13-webfont.woff2') format('woff2'),
+        url('../fonts/uthmanichafs1_ver13-webfont.woff') format('woff'),
+        url('../fonts/uthmanichafs1_ver13-webfont.ttf') format('truetype'),
+        url('../fonts/uthmanichafs1_ver13-webfont.svg#kfgqpc_hafs_uthmanic_scriptRg') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+html,
+body {
+    min-height: 100%;
+}
+
+header {
+    background-color: aliceblue;
+    padding: 1rem;
+    font-size: 1.5rem;
+    font-weight: bold;
+    border-bottom: 1px solid #ddd;
+}
+
+footer {
+    background-color: aliceblue;
+    border-top: 1px solid #ddd;
+    text-align: center;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 1rem;
+
+}
+
+#quranCanvas {
+    padding: 2rem;
+    font-size: 3rem;
+    font-family: 'UthmaniHafs';
+    text-align: center;
+}
