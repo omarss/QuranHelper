@@ -1,130 +1,12 @@
-var arabicNumerals = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
-var diacritics = ['ّ', 'َ', 'ً', 'ُ', 'ٌ', 'ِ', 'ٍ', 'ْ', 'ـ', 'ٰ'];
-var arabicCharacters = ['ء', 'ا', 'أ', 'إ', 'آ', 'ب', 'ت', 'ث', 'ج', 'ح', 'خ', 'د', 'ذ', 'ر', 'ز', 'س', 'ش', 'ص', 'ض', 'ط', 'ظ', 'ع', 'غ', 'ف', 'ق', 'ك', 'ل', 'م', 'ن', 'ه', 'ة', 'و', 'ؤ', 'ي', 'ى'];
-var englishCharactersSmall = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
-var englishCharactersCapital = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
-
-String.prototype.removeDirecritics = function () {
-
-    var newStr = '';
-    for (var i = 0; i < this.length; i++) {
-        var c = this[i];
-        if (diacritics.indexOf(c) >= 0) continue;
-        newStr += c;
-    }
-
-    return newStr;
-
-};
-
-
-String.prototype.getWords = function () {
-    var words = [];
-    var w = '';
-    var isArabic = false;
-
-    for (var i = 0; i < this.length; i++) {
-        var c = this.charAt(i);
-
-        if (arabicCharacters.indexOf(c) >= 0 || diacritics.indexOf(c) >= 0) {
-
-            if (!isArabic) {
-                if (w.length > 0) {
-                    words.push(w);
-                    w = '';
-                }
-
-                isArabic = true;
-            }
-
-            w += c;
-
-
-        } else if (englishCharactersCapital.indexOf(c) >= 0 || englishCharactersSmall.indexOf(c) >= 0) {
-
-            if (isArabic) {
-                if (w.length > 0) {
-                    words.push(w);
-                    w = '';
-                }
-
-                isArabic = false;
-            }
-
-            w += c;
-
-
-        } else {
-
-            if (w.length > 0) {
-                words.push(w);
-                w = '';
-            }
-        }
-
-    }
-
-    if (w.length > 0)
-        words.push(w);
-
-    return words;
-
-};
-
-String.prototype.wordCount = function () {
-    return this.getWords().length;
-};
-
-String.prototype.firstWords = function (count) {
-    var words = this.getWords();
-
-    if (count < words)
-        return words;
-
-    return words.slice(0, count);
-
-};
-
-
-String.prototype.reverse = function () {
-    var newStr = '';
-
-    for (var i = this.length - 1; i >= 0; i--) {
-        newStr += this[i];
-    }
-
-    return newStr;
-};
-
-
-String.prototype.toArabicHindiNumerals = function () {
-    var val = '';
-    for (var i = 0; i < this.length; i++) {
-        var num = parseInt(this[i]);
-
-        if (isNaN(num)) {
-            val += this[i];
-        } else {
-            val += arabicNumerals[num];
-        }
-    }
-
-    return val;
-};
-
-Number.prototype.toArabicHindiNumerals = function () {
-    var val = '';
-
-    var str = this.toString();
-
-    return str.toArabicHindiNumerals();
-};
-
 var quranHelper = {
     canvasElement: '#quranCanvas',
 
     currentSurah: 0,
     currentAyah: 0,
+    currentAyahText: '',
+    currentAyahTextUndiacritized: '',
+    currentAyahIndex: 0,
+    nextAcceptableKey: '',
 
     options: {
         gameMode: true,
@@ -226,8 +108,7 @@ var quranHelper = {
         this.goTo(surah, 1);
     },
 
-
-    nextAyah: function () {
+    nextAyahNumber: function () {
 
         var surah = this.currentSurah;
         var ayah = this.currentAyah + 1;
@@ -240,15 +121,18 @@ var quranHelper = {
         if (this.data[surah - 1].length <= ayah - 1) {
             surah++;
 
-            if (surah === 115) return;
+            if (surah === 115) return null;
             ayah = 1;
 
         }
 
-        this.goTo(surah, ayah);
+        return {
+            s: surah,
+            a: ayah
+        };
     },
 
-    previousAyah: function () {
+    previousAyahNumber: function () {
 
         var surah = this.currentSurah;
         var ayah = this.currentAyah - 1;
@@ -259,13 +143,34 @@ var quranHelper = {
         if (ayah < 1) {
             surah--;
             if (surah < 1) {
-                return;
+                return null;
             }
 
             ayah = this.data[surah - 1].length;
         }
 
-        this.goTo(surah, ayah);
+        return {
+            s: surah,
+            a: ayah
+        };
+    },
+
+    nextAyah: function () {
+
+        var nextSa = this.nextAyahNumber();
+
+        if (nextSa === null) return;
+
+        this.goTo(nextSa.s, nextSa.a);
+    },
+
+    previousAyah: function () {
+
+        var prevSa = this.previousAyahNumber();
+
+        if (prevSa === null) return;
+
+        this.goTo(prevSa.s, prevSa.a);
     },
 
     getAyahText: function (surah, ayah) {
@@ -283,33 +188,80 @@ var quranHelper = {
 
         return null;
     },
+
     goTo: function (surah, ayah) {
         var text = this.getAyahText(surah, ayah);
 
-        if (false && this.options.gameMode) {
+        this.currentSurah = surah;
+        this.currentAyah = ayah;
+        this.currentAyahText = text;
+        this.currentAyahTextUndiacritized = text.removeDirecritics();
 
-            var wordCount = text.wordCount();
+        var showAyahNumber = true;
+        if (this.options.gameMode) {
+            var text2 = text.firstWords(10);
 
-            if (wordCount > this.options.minWordsInGame) {
-
-            } else {
-
+            if (text2.length < text.length) {
+                showAyahNumber = false;
             }
 
+            text = text2;
 
-        } else {
+            var undiacritized = text.removeDirecritics();
 
-            var ayahStr = ayah.toString().reverse();
+            this.currentAyahIndex = undiacritized.length - 1;
 
-            $(this.canvasElement).text(text + ' ' + (ayahStr.toArabicHindiNumerals()));
-
-            this.currentSurah = surah;
-            this.currentAyah = ayah;
+            this.verifyInput();
         }
+
+        var ayahStr = ayah.toString().reverse();
+
+        $(this.canvasElement).text(text + (!showAyahNumber ? '' : ' ' + (ayahStr.toArabicHindiNumerals())));
+
+
+
+    },
+
+    verifyInput: function (key) {
+
+        if (key) {
+            if (key !== this.nextAcceptableKey) return false;
+        }
+
+        var newText = $('#quranCanvas').html() + key;
+
+        $(this.canvasElement).html(newText);
+
+        this.currentAyahIndex++;
+
+        if (this.currentAyahIndex >= this.currentAyahTextUndiacritized.length) {
+
+            var ayahStr = this.currentAyah.toString().reverse();
+
+            $(this.canvasElement).append(' ' + ayahStr.toArabicHindiNumerals());
+            
+            var sa = this.nextAyahNumber();
+
+            if (sa === null) return null;
+
+            var text = this.getAyahText(sa.s, sa.a);
+
+            this.currentSurah = sa.s;
+            this.currentAyah = sa.a;
+            this.currentAyahIndex = -1;
+            this.currentAyahText = text;
+            this.currentAyahTextUndiacritized = text.removeDirecritics();
+
+        }
+
+        if (this.currentAyahIndex >= 0)
+            this.nextAcceptableKey = this.currentAyahTextUndiacritized[this.currentAyahIndex];
+        else
+            this.nextAcceptableKey = ' ';
+
 
     }
 };
-
 
 $(document).keydown(function (e) {
     switch (e.which) {
@@ -336,3 +288,26 @@ $(document).keydown(function (e) {
 });
 
 quranHelper.load();
+
+$(document).on('keydown', function (e) {
+
+    if (e.ctrlKey || e.altKey) return;
+
+    var val = $('#quranCanvas').text();
+
+    var allow = true;
+
+    var key = e.key.mapArabicKeys();
+    if (arabicCharacters.indexOf(key) < 0 && diacritics.indexOf(key) < 0 && key !== ' ') {
+        allow = false;
+    }
+
+    if (allow) {
+        quranHelper.verifyInput(key);
+    }
+});
+
+
+$('#quranCanvas').on('focus', function (e) {
+    $(this).putCursorAtEnd();
+});

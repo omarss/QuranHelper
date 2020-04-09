@@ -19,6 +19,12 @@ header {
     border-bottom: 1px solid #ddd;
 }
 
+@media (min-width: 576px) {
+    .container {
+        max-width: 100%;
+    }
+}
+
 footer {
     background-color: aliceblue;
     border-top: 1px solid #ddd;
@@ -31,9 +37,18 @@ footer {
 }
 
 #quranCanvas {
+    margin: 1.8rem;
     padding: 2rem;
     font-size: 3rem;
     font-family: 'UthmaniHafs';
-    text-align: center;
+    text-align: justify;
     line-height: 2;
+    outline: 0;
+    display: block;
+    overflow: visible;
+    resize: none;
+    border: 0;
+    box-sizing: initial;
+    margin: 0;
+    max-width: initial;
 }
