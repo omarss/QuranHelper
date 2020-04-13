@@ -1,6 +1,6 @@
 var arabicNumerals = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
-var diacritics = ['ّ', 'َ', 'ً', 'ُ', 'ٌ', 'ِ', 'ٍ', 'ْ', 'ـ', 'ٰ'];
-var arabicCharacters = ['ء', 'ا', 'أ', 'إ', 'آ', 'ب', 'ت', 'ث', 'ج', 'ح', 'خ', 'د', 'ذ', 'ر', 'ز', 'س', 'ش', 'ص', 'ض', 'ط', 'ظ', 'ع', 'غ', 'ف', 'ق', 'ك', 'ل', 'م', 'ن', 'ه', 'ة', 'و', 'ؤ', 'ي', 'ى'];
+var diacritics = ['ّ', 'َ', 'ً', 'ُ', 'ٌ', 'ِ', 'ٍ', 'ْ', 'ـ',  'ۥ', 'ۦ'];
+var arabicCharacters = ['ء', 'ا', 'أ', 'إ', 'آ', 'ب', 'ت', 'ث', 'ج', 'ح', 'خ', 'د', 'ذ', 'ر', 'ز', 'س', 'ش', 'ص', 'ض', 'ط', 'ظ', 'ع', 'غ', 'ف', 'ق', 'ك', 'ل', 'م', 'ن', 'ه', 'ة', 'و', 'ؤ', 'ي', 'ى', 'ٰ'];
 var englishCharactersSmall = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
 var englishCharactersCapital = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
 var arabicKeyMap = {
@@ -57,12 +57,46 @@ var arabicKeyMap = {
     'N': 'آ'
 };
 
-String.prototype.removeDirecritics = function () {
+String.prototype.normalize = function () {
 
     var newStr = '';
     for (var i = 0; i < this.length; i++) {
         var c = this[i];
         if (diacritics.indexOf(c) >= 0) continue;
+
+        if (['ا', 'أ', '~', 'آ', 'إ', 'ٰ'].indexOf(c) >= 0) {
+            c = 'ا';
+        } else if (['ي', 'ى'].indexOf(c) >= 0) {
+            c = 'ى';
+        } else if (['ة', 'ه'].indexOf(c) >= 0) {
+            c = 'ه';
+        }
+        newStr += c;
+    }
+
+    return newStr;
+
+};
+
+String.prototype.removeDirecritics = function () {
+
+    var isLastCharAlef = false;
+    var newStr = '';
+    for (var i = 0; i < this.length; i++) {
+        var c = this[i];
+        if (diacritics.indexOf(c) >= 0) continue;
+
+        if(c === 'ى'){
+            isLastCharAlef = true;
+        }else {
+            isLastCharAlef = false;
+
+            if(c === 'ٰ')
+            {
+                continue;
+            }
+        }
+
         newStr += c;
     }
 
@@ -140,10 +174,10 @@ String.prototype.firstWords = function (count) {
 
             if (!isArabic) {
                 if (w.length > 0) {
-                   wordCount++;
-                   if(wordCount == count){
-                       break;
-                   }
+                    wordCount++;
+                    if (wordCount == count) {
+                        break;
+                    }
                     w = '';
                 }
 
@@ -158,7 +192,7 @@ String.prototype.firstWords = function (count) {
             if (isArabic) {
                 if (w.length > 0) {
                     wordCount++;
-                    if(wordCount == count){
+                    if (wordCount == count) {
                         break;
                     }
                     w = '';
@@ -174,7 +208,7 @@ String.prototype.firstWords = function (count) {
 
             if (w.length > 0) {
                 wordCount++;
-                if(wordCount == count){
+                if (wordCount == count) {
                     break;
                 }
                 w = '';
@@ -240,6 +274,17 @@ Number.prototype.toArabicHindiNumerals = function () {
     return str.toArabicHindiNumerals();
 };
 
+var charEquals = function (c1, c2) {
+    if (!c1 || !c2) return false;
+
+    if (c1 === c2) return true;
+
+    c1 = c1.normalize();
+    c2 = c2.normalize();
+
+    return c1 === c2;
+
+};
 
 // source: https://css-tricks.com/snippets/jquery/move-cursor-to-end-of-textarea-or-input/
 jQuery.fn.putCursorAtEnd = function () {
