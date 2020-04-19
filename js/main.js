@@ -8,6 +8,10 @@ var quranHelper = {
     nextAcceptableKey: '',
     currentAyahIndexMap: {},
 
+    attempts: 0,
+    successes: 0,
+    timeInSeconds: 0,
+
     suras: ['الفاتحة', 'البقرة', 'آل عمران', 'النساء', 'المائدة', 'الأنعام', 'الأعراف', 'الأنفال', 'التوبة', 'يونس', 'هود', 'يوسف', 'الرعد', 'إبراهيم', 'الحجر', 'النحل', 'الإسراء', 'الكهف', 'مريم', 'طه', 'الأنبياء', 'الحج', 'المؤمنون', 'النور', 'الفرقان', 'الشعراء', 'النمل', 'القصص', 'العنكبوت', 'الروم', 'لقمان', 'السجدة', 'الأحزاب', 'سبأ', 'فاطر', 'يس', 'الصافات', 'ص', 'الزمر', 'غافر', 'فصلت', 'الشورى', 'الزخرف', 'الدخان', 'الجاثية', 'الأحقاف', 'محمد', 'الفتح', 'الحجرات', 'ق', 'الذاريات', 'الطور', 'النجم', 'القمر', 'الرحمن', 'الواقعة', 'الحديد', 'المجادلة', 'الحشر', 'الممتحنة', 'الصف', 'الجمعة', 'المنافقون', 'التغابن', 'الطلاق', 'التحريم', 'الملك', 'القلم', 'الحاقة', 'المعارج', 'نوح', 'الجن', 'المزمل', 'المدثر', 'القيامة', 'الإنسان', 'المرسلات', 'النبأ', 'النازعات', 'عبس', 'التكوير', 'الانفطار', 'المطففين', 'الانشقاق', 'البروج', 'الطارق', 'الأعلى', 'الغاشية', 'الفجر', 'البلد', 'الشمس', 'الليل', 'الضحى', 'الشرح', 'التين', 'العلق', 'القدر', 'البينة', 'الزلزلة', 'العاديات', 'القارعة', 'التكاثر', 'العصر', 'الهمزة', 'الفيل', 'قريش', 'الماعون', 'الكوثر', 'الكافرون', 'النصر', 'المسد', 'الإخلاص', 'الفلق', 'الناس'],
     options: {
         gameMode: true,
@@ -137,7 +141,7 @@ var quranHelper = {
             if (text2.length < text.length) {
                 showAyahNumber = false;
             }
-            text = text2;
+
 
 
             var undiacritized = '';
@@ -145,60 +149,80 @@ var quranHelper = {
             var diac = '';
             for (var i = 0; i < text.length; i++) {
                 var c = text[i];
-                if (diacritics.indexOf(c) >= 0){ 
+                if (diacritics.indexOf(c) >= 0) {
                     diac += c;
                     continue;
                 }
 
 
-        
-                if(c === 'ى'){
+
+                if (c === 'ى') {
                     isLastCharAlef = true;
-                }else {
+                } else {
                     isLastCharAlef = false;
-        
-                    if(c === 'ٰ')
-                    {
+
+                    if (c === 'ٰ') {
                         continue;
                     }
                 }
 
 
-                if(li>=0){
+                if (li >= 0) {
                     this.currentAyahIndexMap[li] = diac;
                 }
 
                 diac = '';
-        
+
                 li++;
                 undiacritized += c;
             }
-        
-            this.currentAyahIndex = undiacritized.length - 1;
-            var ayahStr = ayah.toString().reverse();
-            $(this.canvasElement).text(text);
-            this.verifyInput();
-            this.verifyInput(' ');
-        } else {
-            var ayahStr = ayah.toString().reverse();
-            $(this.canvasElement).text(text + (!showAyahNumber ? '' : ' ' + (ayahStr.toArabicHindiNumerals())));
 
+            this.currentAyahIndex = undiacritized.firstWords(10).length - 1;
+
+            text = text2;
         }
 
-        $('#currentSurahAyat').text('سورة ' + this.suras[surah-1] +  ' آية ' + ayah);
+        $(this.canvasElement).text(text);
+
+
+        this.verifyInput();
+        this.verifyInput(' ');
+
+        $('#currentSurahAyat').text('سورة ' + this.suras[surah - 1] + ' آية ' + ayah);
 
     },
-    verifyInput: function (key) {
+    verifyInput: function (key, isManual) {
         if (key !== undefined && key !== null) {
-            if (!charEquals(key, this.nextAcceptableKey)) return false;
-            var arrayLength=  Object.keys(this.currentAyahIndexMap).length;
-            var newText = $(this.canvasElement).html() + this.nextAcceptableKey + (this.currentAyahIndex === -1 || this.currentAyahIndex >= arrayLength? '' : this.currentAyahIndexMap[this.currentAyahIndex]);
+            if (!charEquals(key, this.nextAcceptableKey)) {
+                this.attempts++;
+
+                if (this.attempts === 3) {
+                    this.attempts = 0;
+                    this.verifyInput(this.nextAcceptableKey);
+                }
+
+                return false;
+            }
+
+            this.attempts = 0;
+
+            var arrayLength = Object.keys(this.currentAyahIndexMap).length;
+            var newText = $(this.canvasElement).html() + this.nextAcceptableKey + (this.currentAyahIndex === -1 || this.currentAyahIndex >= arrayLength ? '' : this.currentAyahIndexMap[this.currentAyahIndex]);
+
             $(this.canvasElement).html(newText);
         }
+
         this.currentAyahIndex++;
+
+        if (isManual) {
+            this.successes++;
+        }
+
+
         if (this.currentAyahIndex >= this.currentAyahTextUndiacritized.length) {
             var ayahStr = this.currentAyah.toString().reverse();
             $(this.canvasElement).append(' ' + ayahStr.toArabicHindiNumerals());
+
             var sa = this.nextAyahNumber();
             if (sa === null) return null;
             var text = this.getAyahText(sa.s, sa.a);
@@ -209,46 +233,51 @@ var quranHelper = {
             var diac = '';
             for (var i = 0; i < text.length; i++) {
                 var c = text[i];
-                if (diacritics.indexOf(c) >= 0){ 
+                if (diacritics.indexOf(c) >= 0) {
                     diac += c;
                     continue;
                 }
 
 
-        
-                if(c === 'ى'){
+
+                if (c === 'ى') {
                     isLastCharAlef = true;
-                }else {
+                } else {
                     isLastCharAlef = false;
-        
-                    if(c === 'ٰ')
-                    {
+
+                    if (c === 'ٰ') {
                         continue;
                     }
                 }
 
 
-                if(li>=0){
+                if (li >= 0) {
                     this.currentAyahIndexMap[li] = diac;
                 }
 
                 diac = '';
-        
+
                 li++;
                 undiacritized += c;
             }
-        
+
 
             this.currentSurah = sa.s;
             this.currentAyah = sa.a;
             this.currentAyahIndex = -1;
             this.currentAyahText = text;
             this.currentAyahTextUndiacritized = text.removeDirecritics();
+
+
         }
+
         if (this.currentAyahIndex >= 0)
             this.nextAcceptableKey = this.currentAyahTextUndiacritized[this.currentAyahIndex];
-        else
+        else {
             this.nextAcceptableKey = ' ';
+            this.verifyInput(' ');
+
+        }
     }
 };
 $(document).keydown(function (e) {
@@ -271,7 +300,16 @@ $(document).keydown(function (e) {
     e.preventDefault(); // prevent the default action (scroll / move caret)
 });
 quranHelper.load();
+
+
+var isSpeedPaused = true;
+var secondsWithoutTyping = 0;
+var charactersTyped = 0;
+
 $(document).on('keydown', function (e) {
+
+    charactersTyped++;
+
     if (e.ctrlKey || e.altKey) return;
     var val = $('#quranCanvas').text();
     var allow = true;
@@ -279,8 +317,42 @@ $(document).on('keydown', function (e) {
     if (arabicCharacters.indexOf(key) < 0 && diacritics.indexOf(key) < 0 && key !== ' ') {
         allow = false;
     }
+
     if (allow) {
-        quranHelper.verifyInput(key);
+        if (isSpeedPaused) {
+            isSpeedPaused = false;
+            charactersTyped = 0;
+
+
+            // start timer
+            setInterval(function() {
+                if (isSpeedPaused) return;
+
+                if (charactersTyped === 0)
+                    secondsWithoutTyping++;
+
+                if (secondsWithoutTyping > 5) {
+                    isSpeedPaused = true;
+                    secondsWithoutTyping = 0;
+                    charactersTyped = 0;
+                    return;
+                }
+
+                charactersTyped = 0;
+
+                quranHelper.timeInSeconds++;
+
+                var speed = Math.round(quranHelper.successes / quranHelper.timeInSeconds * 60.0, 0);
+                $('#speed').text('السرعة: ' + speed + ' ح/دقيقة');
+
+            }, 1000);
+
+            setTimeout(function () {
+                $('#speed').removeClass('d-none');
+            }, 1000);
+        }
+
+        quranHelper.verifyInput(key, true);
     }
 });
 $('#quranCanvas').on('focus', function (e) {

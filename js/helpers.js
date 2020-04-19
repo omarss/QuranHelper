@@ -1,5 +1,5 @@
 var arabicNumerals = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
-var diacritics = ['ّ', 'َ', 'ً', 'ُ', 'ٌ', 'ِ', 'ٍ', 'ْ', 'ـ',  'ۥ', 'ۦ'];
+var diacritics = ['ّ', 'َ', 'ً', 'ُ', 'ٌ', 'ِ', 'ٍ', 'ْ', 'ـ', 'ۥ', 'ۦ'];
 var arabicCharacters = ['ء', 'ا', 'أ', 'إ', 'آ', 'ب', 'ت', 'ث', 'ج', 'ح', 'خ', 'د', 'ذ', 'ر', 'ز', 'س', 'ش', 'ص', 'ض', 'ط', 'ظ', 'ع', 'غ', 'ف', 'ق', 'ك', 'ل', 'م', 'ن', 'ه', 'ة', 'و', 'ؤ', 'ي', 'ى', 'ٰ'];
 var englishCharactersSmall = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
 var englishCharactersCapital = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
@@ -64,7 +64,7 @@ String.prototype.normalize = function () {
         var c = this[i];
         if (diacritics.indexOf(c) >= 0) continue;
 
-        if (['ا', 'أ', '~', 'آ', 'إ', 'ٰ'].indexOf(c) >= 0) {
+        if (['ا', 'أ', '~', 'آ', 'إ', 'ٰ', 'ء', 'ئ', 'ؤ'].indexOf(c) >= 0) {
             c = 'ا';
         } else if (['ي', 'ى'].indexOf(c) >= 0) {
             c = 'ى';
@@ -86,13 +86,12 @@ String.prototype.removeDirecritics = function () {
         var c = this[i];
         if (diacritics.indexOf(c) >= 0) continue;
 
-        if(c === 'ى'){
+        if (c === 'ى') {
             isLastCharAlef = true;
-        }else {
+        } else {
             isLastCharAlef = false;
 
-            if(c === 'ٰ')
-            {
+            if (c === 'ٰ') {
                 continue;
             }
         }
