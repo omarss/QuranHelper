@@ -306,14 +306,10 @@ var isSpeedPaused = true;
 var secondsWithoutTyping = 0;
 var charactersTyped = 0;
 
-$(document).on('keydown', function (e) {
 
-    charactersTyped++;
-
-    if (e.ctrlKey || e.altKey) return;
-    var val = $('#quranCanvas').text();
+var onKeyInput = function (key) {
     var allow = true;
-    var key = e.key.mapArabicKeys();
+
     if (arabicCharacters.indexOf(key) < 0 && diacritics.indexOf(key) < 0 && key !== ' ') {
         allow = false;
     }
@@ -324,30 +320,32 @@ $(document).on('keydown', function (e) {
             charactersTyped = 0;
 
 
-            // start timer
-            setInterval(function() {
-                $('#txtInput').trigger("focus");
+            if (quranHelper.timeInSeconds === 0) {
+                // start timer
+                setInterval(function () {
+                    $('#txtInput').trigger("focus");
 
-                if (isSpeedPaused) return;
+                    if (isSpeedPaused) return;
 
-                if (charactersTyped === 0)
-                    secondsWithoutTyping++;
+                    if (charactersTyped === 0)
+                        secondsWithoutTyping++;
 
-                if (secondsWithoutTyping > 4) {
-                    isSpeedPaused = true;
-                    secondsWithoutTyping = 0;
+                    if (secondsWithoutTyping > 4) {
+                        isSpeedPaused = true;
+                        secondsWithoutTyping = 0;
+                        charactersTyped = 0;
+                        return;
+                    }
+
                     charactersTyped = 0;
-                    return;
-                }
 
-                charactersTyped = 0;
+                    quranHelper.timeInSeconds++;
 
-                quranHelper.timeInSeconds++;
+                    var speed = Math.round(quranHelper.successes / quranHelper.timeInSeconds * 60.0, 0);
+                    $('#speed').text('السرعة: ' + speed + ' ح/دقيقة');
 
-                var speed = Math.round(quranHelper.successes / quranHelper.timeInSeconds * 60.0, 0);
-                $('#speed').text('السرعة: ' + speed + ' ح/دقيقة');
-
-            }, 1000);
+                }, 1000);
+            }
 
             setTimeout(function () {
                 $('#speed').removeClass('d-none');
@@ -356,6 +354,17 @@ $(document).on('keydown', function (e) {
 
         quranHelper.verifyInput(key, true);
     }
+};
+
+$(document).on('keydown', function (e) {
+
+    charactersTyped++;
+
+    if (e.ctrlKey || e.altKey) return;
+    var val = $('#quranCanvas').text();
+    var key = e.key.mapArabicKeys();
+
+    return onKeyInput(key);
 });
 
 $('#quranCanvas').on('focus', function (e) {
@@ -363,3 +372,17 @@ $('#quranCanvas').on('focus', function (e) {
 });
 
 $('#txtInput').trigger("focus");
+
+
+$('#keyboard').jkeyboard({
+    input: $('#txtInput'),
+    layout: 'arabic',
+    onKeyInput: function (key) {
+        onKeyInput(key)
+    }
+});
+
+if (isMobileOrTablet()) {
+    $('body').addClass('is-mobile');
+    $('#keyboard').removeClass('d-none');
+}
