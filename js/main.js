@@ -225,14 +225,14 @@ var quranHelper = {
             var ayahStr = this.currentAyah.toString().reverse();
             $(this.canvasElement).append(' ' + ayahStr.toArabicHindiNumerals());
 
-            
+
             var sa = this.nextAyahNumber();
             if (sa === null || sa.s !== this.currentSurah) {
                 this.nextAcceptableKey = '';
                 return null;
             }
 
-    
+
             var text = this.getAyahText(sa.s, sa.a);
 
             this.currentAyahIndexMap = {};
@@ -376,7 +376,11 @@ $(document).on('keydown', function (e) {
 
 $('#txtInput').trigger("focus");
 
+var isInputHnadled = false;
+
 $('#txtInput').on('input', function (e) {
+    if (isInputHnadled) return;
+
     var val = $(this).val();
     var key = val.length > 0 ? val.substring(val.length - 1) : '';
     if (!key) return false;
@@ -384,6 +388,10 @@ $('#txtInput').on('input', function (e) {
     charactersTyped++;
 
     onKeyInput(key);
+
+    $(this).val('');
+
+    isInputHnadled = false;
 });
 
 
