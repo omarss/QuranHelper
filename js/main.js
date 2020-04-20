@@ -21,7 +21,7 @@ var quranHelper = {
     ayat: [],
     load: function () {
         var that = this;
-        $.get('../data/quran-uthmani-min.txt')
+        $.get('data/quran-uthmani-min.txt')
             .done(function (res) {
                 var data = [];
                 var ayat = [];
