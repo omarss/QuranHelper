@@ -129,7 +129,7 @@ var quranHelper = {
         }
         return null;
     },
-    goTo: function (surah, ayah) {
+    goTo: function (surah, ayah, dontRender) {
         var text = this.getAyahText(surah, ayah);
         this.currentSurah = surah;
         this.currentAyah = ayah;
@@ -182,13 +182,15 @@ var quranHelper = {
             text = text2;
         }
 
-        $(this.canvasElement).text(text);
+        if (!dontRender) {
+            $(this.canvasElement).text(text);
 
 
-        this.verifyInput();
-        this.verifyInput(' ');
+            this.verifyInput();
+            this.verifyInput(' ');
 
-        $('#currentSurahAyat').removeClass('d-none').text('سورة ' + this.suras[surah - 1] + ' آية ' + ayah);
+            $('#currentSurahAyat').removeClass('d-none').text('سورة ' + this.suras[surah - 1] + ' آية ' + ayah);
+        }
 
     },
     verifyInput: function (key, isManual) {
@@ -223,8 +225,14 @@ var quranHelper = {
             var ayahStr = this.currentAyah.toString().reverse();
             $(this.canvasElement).append(' ' + ayahStr.toArabicHindiNumerals());
 
+            
             var sa = this.nextAyahNumber();
-            if (sa === null) return null;
+            if (sa === null || sa.s !== this.currentSurah) {
+                this.nextAcceptableKey = '';
+                return null;
+            }
+
+    
             var text = this.getAyahText(sa.s, sa.a);
 
             this.currentAyahIndexMap = {};

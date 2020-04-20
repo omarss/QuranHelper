@@ -62,6 +62,13 @@ footer {
     background: rgba(255, 243, 205, 0.7);
 }
 
+#txtInput {
+    position: absolute;
+    left: -2000px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+}
 
 @media (max-width: 767px) {
     #quranCanvas {
