@@ -188,7 +188,7 @@ var quranHelper = {
         this.verifyInput();
         this.verifyInput(' ');
 
-        $('#currentSurahAyat').text('سورة ' + this.suras[surah - 1] + ' آية ' + ayah);
+        $('#currentSurahAyat').removeClass('d-none').text('سورة ' + this.suras[surah - 1] + ' آية ' + ayah);
 
     },
     verifyInput: function (key, isManual) {
@@ -196,7 +196,7 @@ var quranHelper = {
             if (!charEquals(key, this.nextAcceptableKey)) {
                 this.attempts++;
 
-                if (this.attempts === 3) {
+                if (this.attempts === 5) {
                     this.attempts = 0;
                     this.verifyInput(this.nextAcceptableKey);
                 }
@@ -326,12 +326,14 @@ $(document).on('keydown', function (e) {
 
             // start timer
             setInterval(function() {
+                $('#txtInput').trigger("focus");
+
                 if (isSpeedPaused) return;
 
                 if (charactersTyped === 0)
                     secondsWithoutTyping++;
 
-                if (secondsWithoutTyping > 5) {
+                if (secondsWithoutTyping > 4) {
                     isSpeedPaused = true;
                     secondsWithoutTyping = 0;
                     charactersTyped = 0;
@@ -355,6 +357,9 @@ $(document).on('keydown', function (e) {
         quranHelper.verifyInput(key, true);
     }
 });
+
 $('#quranCanvas').on('focus', function (e) {
     $(this).putCursorAtEnd();
 });
+
+$('#txtInput').trigger("focus");

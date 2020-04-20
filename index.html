@@ -24,12 +24,13 @@
   <main class="container">
 
     <p class="text-center">
-      <span id="currentSurahAyat" class="alert alert-info"></span>
-      <span id="speed" class="alert alert-warning float-left d-none">السرعة: </span>
+      <span id="currentSurahAyat" class="alert alert-info d-none"></span>
+      <span id="speed" class="alert alert-warning d-none">السرعة: </span>
 
     </p>
 
     <div id="quranCanvas"></div>
+    <input id="txtInput" type="text" style="width: 0; height: 0; visibility: hidden;">
   </main>
 
   <footer class="footer mt-auto py-3">
@@ -47,6 +48,9 @@
   <!-- Start of omarss Zendesk Widget script -->
   <script id="ze-snippet" src="https://static.zdassets.com/ekr/snippet.js?key=6aace273-6275-4345-9d9d-cc6f0fbde4f3">
   </script>
+  <script type="text/javascript">
+  zE('webWidget', 'setLocale', 'ar');
+</script>
   <!-- End of omarss Zendesk Widget script -->
 </body>
 
