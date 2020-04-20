@@ -62,52 +62,6 @@ footer {
     background: rgba(255, 243, 205, 0.7);
 }
 
-#keyboard {
-    background: #144766;
-    margin-bottom: 2rem;
-    padding: 2rem;
-    direction: ltr;
-}
-
-
-
-body.is-mobile .jkeyboard .jline ul li {
-
-    font-size: 17px;
-    margin: 5px 0 1px 7px;
-    width: 20px;
-    height: 25px;
-    line-height: 25px;
-}
-
-
-body.is-mobile .jkeyboard .jline .shift {
-    width: 50px;
-}
-
-body.is-mobile .jkeyboard .jline .space {
-    width: 192px;
-}
-
-body.is-mobile .jkeyboard .jline .return {
-    width: 60px;
-}
-
-body.is-mobile .jkeyboard .jline .numeric_switch {
-    width: 42px;
-}
-
-body.is-mobile .jkeyboard .jline .backspace {
-    width: 35px;
-}
-
-body.is-mobile #keyboard {
-    margin-bottom: 0;
-    padding: 10px;
-    bottom: 0;
-    z-index: 999999999;
-}
-
 
 @media (max-width: 767px) {
     #quranCanvas {

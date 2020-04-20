@@ -361,28 +361,27 @@ $(document).on('keydown', function (e) {
     charactersTyped++;
 
     if (e.ctrlKey || e.altKey) return;
-    var val = $('#quranCanvas').text();
     var key = e.key.mapArabicKeys();
 
     return onKeyInput(key);
 });
 
-$('#quranCanvas').on('focus', function (e) {
-    $(this).putCursorAtEnd();
-});
-
 $('#txtInput').trigger("focus");
 
+$('#txtInput').on('input', function (e) {
+    var val = $(this).val();
+    var key = val.length > 0 ? val.substring(val.length - 1) : '';
+    if (!key) return false;
 
-$('#keyboard').jkeyboard({
-    input: $('#txtInput'),
-    layout: 'arabic',
-    onKeyInput: function (key) {
-        onKeyInput(key)
-    }
+    charactersTyped++;
+
+    onKeyInput(key);
 });
 
+
 if (isMobileOrTablet()) {
-    $('body').addClass('is-mobile');
-    $('#keyboard').removeClass('d-none');
+    $(document).on('click tap', function (e) {
+        $('#txtInput').focus();
+    });
+
 }
