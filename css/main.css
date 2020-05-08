@@ -75,3 +75,8 @@ footer {
         font-size: 2rem;
     }
 }
+
+.alert {
+    display: block;
+    margin: 1rem;
+}

@@ -47,14 +47,30 @@ var quranHelper = {
                 }
                 that.data = data;
                 that.ayat = ayat;
-                if (that.options.gameMode) {
-                    var rand = Math.floor(Math.random() * ayat.length);
-                    var sa = ayat[rand];
-                    that.goTo(sa.s, sa.a);
+
+                var html = '';
+                for (var i = 0; i < that.suras.length; i++) {
+                    html += '<option value="' + i + '">' + that.suras[i] + '</option>'
+                }
+
+                $('#ddlSurah').html(html);
+
+                var lastVisitedSurah = localStorage.getItem('currentSurah');
+                var lastVisitedAyah = localStorage.getItem('currentAyah');
+
+                if (lastVisitedSurah > 0 && lastVisitedSurah > 0) {
+                    that.goTo(lastVisitedSurah, lastVisitedAyah);
+
+                    $('#ddlSurah').val(lastVisitedSurah - 1);
                 } else {
                     that.nextAyah();
                 }
             });
+    },
+    random: function () {
+        var rand = Math.floor(Math.random() * this.ayat.length);
+        var sa = this.ayat[rand];
+        this.goTo(sa.s, sa.a);
     },
     nextSurah: function () {
         var surah = this.currentSurah;
@@ -135,6 +151,10 @@ var quranHelper = {
         this.currentAyah = ayah;
         this.currentAyahText = text;
         this.currentAyahTextUndiacritized = text.removeDirecritics();
+
+        localStorage.setItem('currentSurah', this.currentSurah);
+        localStorage.setItem('currentAyah', this.currentAyah);
+
         var showAyahNumber = true;
         if (this.options.gameMode) {
             var text2 = text.firstWords(10);
@@ -401,3 +421,14 @@ if (isMobileOrTablet()) {
     });
 
 }
+
+$('select').select2({
+    theme: 'bootstrap4',
+    dir: "rtl"
+});
+
+$('#ddlSurah').on('change', function () {
+    var i = parseInt($(this).val());
+
+    quranHelper.goTo(i + 1, 1);
+});

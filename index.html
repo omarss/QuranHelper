@@ -10,6 +10,8 @@
 
   <!-- Bootstrap core CSS -->
   <link href="css/bootstrap-rtl.css" rel="stylesheet">
+  <link href="css/select2.css" rel="stylesheet">
+  <link href="css/select2-bootstrap4-rtl.css" rel="stylesheet">
   <link href="css/main.css?v=11" rel="stylesheet">
 </head>
 
@@ -23,10 +25,13 @@
   <br />
   <main class="container">
 
+    <div class="form-group" style="max-width: 250px; margin: 0 auto;">
+      <select id="ddlSurah" class="form-control"></select>
+    </div>
+
     <p class="text-center">
       <span id="currentSurahAyat" class="alert alert-info d-none"></span>
       <span id="speed" class="alert alert-warning d-none">السرعة: </span>
-
     </p>
 
     <div id="quranCanvas"></div>
@@ -46,6 +51,8 @@
 
   <script type="text/javascript" src="js/jquery-3.4.1.min.js"></script>
   <script type="text/javascript" src="js/bootstrap.bundle.min.js"></script>
+  <script type="text/javascript" src="js/select2.full.min.js"></script>
+  <script type="text/javascript" src="js/i18n/ar.js"></script>
   <script type="text/javascript" src="js/helpers.js?v=11"></script>
   <script type="text/javascript" src="js/main.js?v=11"></script>
 
@@ -58,6 +65,7 @@
     zE('webWidget', 'setLocale', 'ar');
   </script>
   <!-- End of omarss Zendesk Widget script -->
+
 </body>
 
 </html>
